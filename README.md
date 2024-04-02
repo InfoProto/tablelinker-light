@@ -1,5 +1,7 @@
 # tablelinker-light
 
+![Python Versions](https://github.com/InfoProto/tablelinker-light/actions/workflows/python-package.yml/badge.svg)
+
 TableLinker をコマンドライン / プログラム組み込みで利用するための
 ライブラリ Tablelinker-lib の軽量版派生バージョンです。
 
