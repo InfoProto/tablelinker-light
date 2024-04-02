@@ -3,6 +3,7 @@ from logging import getLogger
 from typing import Any, List
 
 from . import params
+from tablelinker.exceptions import ConverterNotAvailable
 
 logger = getLogger(__name__)
 
@@ -104,7 +105,7 @@ class Convertor(ABC):
         """
         # 前処理
         if self.preproc(context) is False:
-            raise RuntimeError((
+            raise ConverterNotAvailable((
                 "コンバータ {} は利用できません。"
                 "エラーメッセージを確認してください。").format(self.key()))
 

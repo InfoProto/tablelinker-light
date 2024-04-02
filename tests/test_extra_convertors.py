@@ -1,7 +1,10 @@
 from pathlib import Path
 import re
 
+import pytest
+
 from tablelinker import Table
+from tablelinker.exceptions import ConverterNotAvailable
 
 sample_dir = Path(__file__).parent.parent / "sample/datafiles"
 
@@ -157,16 +160,19 @@ def test_to_wareki():
 
 def test_geocoder_code():
     table = Table(sample_dir / "hachijo_sightseeing.csv")
-    table = table.convert(
-        convertor="geocoder_code",
-        params={
-            "input_col_idx": "所在地",
-            "output_col_name": "市区町村コード",
-            "output_col_idx": 0,
-            "within": ["東京都"],
-            "default": "0"
-        }
-    )
+    try:
+        table = table.convert(
+            convertor="geocoder_code",
+            params={
+                "input_col_idx": "所在地",
+                "output_col_name": "市区町村コード",
+                "output_col_idx": 0,
+                "within": ["東京都"],
+                "default": "0"
+            }
+        )
+    except ConverterNotAvailable:
+        pytest.skip("Geocoding dictionary is not installed.")
 
     with table.open() as csv:
         for lineno, row in enumerate(csv):
@@ -184,16 +190,19 @@ def test_geocoder_code():
 
 def test_geocoder_latlong():
     table = Table(sample_dir / "hachijo_sightseeing.csv")
-    table = table.convert(
-        convertor="geocoder_latlong",
-        params={
-            "input_col_idx": "所在地",
-            "output_col_names": ["緯度", "経度", "レベル"],
-            "output_col_idx": "説明",
-            "within": ["東京都"],
-            "default": "",
-        }
-    )
+    try:
+        table = table.convert(
+            convertor="geocoder_latlong",
+            params={
+                "input_col_idx": "所在地",
+                "output_col_names": ["緯度", "経度", "レベル"],
+                "output_col_idx": "説明",
+                "within": ["東京都"],
+                "default": "",
+            }
+        )
+    except ConverterNotAvailable:
+        pytest.skip("Geocoding dictionary is not installed.")
 
     with table.open() as csv:
         for lineno, row in enumerate(csv):
@@ -212,16 +221,19 @@ def test_geocoder_latlong():
 
 def test_geocoder_municipality():
     table = Table(sample_dir / "hachijo_sightseeing.csv")
-    table = table.convert(
-        convertor="geocoder_municipality",
-        params={
-            "input_col_idx": "所在地",
-            "output_col_names": ["市区町村名"],
-            "output_col_idx": 0,
-            "within": ["東京都"],
-            "default": "不明"
-        }
-    )
+    try:
+        table = table.convert(
+            convertor="geocoder_municipality",
+            params={
+                "input_col_idx": "所在地",
+                "output_col_names": ["市区町村名"],
+                "output_col_idx": 0,
+                "within": ["東京都"],
+                "default": "不明"
+            }
+        )
+    except ConverterNotAvailable:
+        pytest.skip("Geocoding dictionary is not installed.")
 
     with table.open() as csv:
         for lineno, row in enumerate(csv):
@@ -258,14 +270,17 @@ def test_geocoder_municipality_seirei():
         "美浜図書館打瀬分館,美浜区打瀬2丁目13番地（幕張ベイタウン・コア内）,043-272-4646\n"
     )
     table = Table(data=data)
-    table = table.convert(
-        convertor="geocoder_municipality",
-        params={
-            "input_col_idx": "所在地",
-            "output_col_names": ["市町村名", "区名"],
-            "default": ""
-        }
-    )
+    try:
+        table = table.convert(
+            convertor="geocoder_municipality",
+            params={
+                "input_col_idx": "所在地",
+                "output_col_names": ["市町村名", "区名"],
+                "default": ""
+            }
+        )
+    except ConverterNotAvailable:
+        pytest.skip("Geocoding dictionary is not installed.")
 
     with table.open(as_dict=True) as dictreader:
         for lineno, row in enumerate(dictreader):
@@ -285,13 +300,16 @@ def test_geocoder_nodeid():
         "国立情報学研究所,総務チーム,千代田区一ツ橋２－１－２,03-4212-2000\n"
         "国立情報学研究所,広報チーム,一ッ橋二丁目1-2,03-4212-2164\n")
     table = Table(data=data)
-    table = table.convert(
-        convertor="geocoder_nodeid",
-        params={
-            "input_col_idx": "所在地",
-            "output_col_name": "ノードID"
-        }
-    )
+    try:
+        table = table.convert(
+            convertor="geocoder_nodeid",
+            params={
+                "input_col_idx": "所在地",
+                "output_col_name": "ノードID"
+            }
+        )
+    except ConverterNotAvailable:
+        pytest.skip("Geocoding dictionary is not installed.")
 
     with table.open(as_dict=True) as dictreader:
         for lineno, row in enumerate(dictreader):
@@ -310,16 +328,19 @@ def test_geocoder_postcode():
         "国立情報学研究所,総務チーム,千代田区一ツ橋２－１－２,03-4212-2000\n"
         "国立情報学研究所,広報チーム,一ッ橋二丁目1-2,03-4212-2164\n")
     table = Table(data=data)
-    table = table.convert(
-        convertor="geocoder_postcode",
-        params={
-            "input_col_idx": "所在地",
-            "output_col_name": "郵便番号",
-            "output_col_idx": "所在地",
-            "hiphen": True,
-            "default": ""
-        }
-    )
+    try:
+        table = table.convert(
+            convertor="geocoder_postcode",
+            params={
+                "input_col_idx": "所在地",
+                "output_col_name": "郵便番号",
+                "output_col_idx": "所在地",
+                "hiphen": True,
+                "default": ""
+            }
+        )
+    except ConverterNotAvailable:
+        pytest.skip("Geocoding dictionary is not installed.")
 
     with table.open(as_dict=True) as dictreader:
         for lineno, row in enumerate(dictreader):
@@ -334,15 +355,18 @@ def test_geocoder_postcode():
 
 def test_geocoder_prefecture():
     table = Table(sample_dir / "hachijo_sightseeing.csv")
-    table = table.convert(
-        convertor="geocoder_prefecture",
-        params={
-            "input_col_idx": "所在地",
-            "output_col_name": "都道府県名",
-            "output_col_idx": 0,
-            "default": "東京都"
-        }
-    )
+    try:
+        table = table.convert(
+            convertor="geocoder_prefecture",
+            params={
+                "input_col_idx": "所在地",
+                "output_col_name": "都道府県名",
+                "output_col_idx": 0,
+                "default": "東京都"
+            }
+        )
+    except ConverterNotAvailable:
+        pytest.skip("Geocoding dictionary is not installed.")
 
     with table.open() as csv:
         for lineno, row in enumerate(csv):
