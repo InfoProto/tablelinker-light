@@ -10,9 +10,8 @@ import sys
 sys.path.insert(0, os.path.abspath('..'))
 import tablelinker  # noqa
 
-project = 'tablelinker'
-copyright = '2023, NII-CPS'
-author = 'NII-CPS'
+project = 'tablelinker-light'
+author = 'Takeshi Sagara <sagara@info-proto.com>'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

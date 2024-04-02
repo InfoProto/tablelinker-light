@@ -29,7 +29,7 @@ def test_excel_open():
     table = Table(
         file=sample_dir / "hachijo_sightseeing.xlsx",
         sheet="その他")
-    with pytest.raises(ValueError):
+    with pytest.raises((ValueError, KeyError)):
         table.open()
 
     # 存在するシート名を指定して Excel ファイルを開く

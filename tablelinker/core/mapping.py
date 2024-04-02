@@ -13,7 +13,7 @@ from typing import List
 
 from munkres import Munkres
 import numpy as np
-from transformers import AutoModel, AutoTokenizer
+# from transformers import AutoModel, AutoTokenizer
 
 logger = getLogger(__name__)
 
@@ -124,105 +124,105 @@ class StringSimilarity(object):
         return (match, mlist1, mlist2)
 
 
-class Similarity(object):
-    """
-    日本語表記のラベルから、語ベクトルを計算するクラス
-    by Akiko Aizawa
-    """
+# class Similarity(object):
+#     """
+#     日本語表記のラベルから、語ベクトルを計算するクラス
+#     by Akiko Aizawa
+#     """
 
-    def __init__(self):
-        """
-        トークナイザと事前学習済みモデルを取得する
+#     def __init__(self):
+#         """
+#         トークナイザと事前学習済みモデルを取得する
 
-        Note
-        ----
-        毎回ウェブからダウンロードすると遅いので、
-        ``./transformer_data/{tokenizer, model}`` に保存し、
-        再利用する。
-        """
-        tokenizer_dir = os.path.join(
-            os.path.dirname(__file__), 'transformer_data/tokenizer')
-        if os.path.exists(tokenizer_dir):
-            logger.debug("Loading saved tokenizer from {}".format(
-                tokenizer_dir))
-            self.tokenizer = AutoTokenizer.from_pretrained(
-                tokenizer_dir)
-        else:
-            logger.debug("Loading tokenizer from web")
-            os.makedirs(tokenizer_dir, 0o755, exist_ok=True)
-            self.tokenizer = AutoTokenizer.from_pretrained(
-                "cl-tohoku/bert-base-japanese-whole-word-masking")
-            self.tokenizer.save_pretrained(tokenizer_dir)
-            logger.debug("Save tokenizer to {}".format(
-                tokenizer_dir))
+#         Note
+#         ----
+#         毎回ウェブからダウンロードすると遅いので、
+#         ``./transformer_data/{tokenizer, model}`` に保存し、
+#         再利用する。
+#         """
+#         tokenizer_dir = os.path.join(
+#             os.path.dirname(__file__), 'transformer_data/tokenizer')
+#         if os.path.exists(tokenizer_dir):
+#             logger.debug("Loading saved tokenizer from {}".format(
+#                 tokenizer_dir))
+#             self.tokenizer = AutoTokenizer.from_pretrained(
+#                 tokenizer_dir)
+#         else:
+#             logger.debug("Loading tokenizer from web")
+#             os.makedirs(tokenizer_dir, 0o755, exist_ok=True)
+#             self.tokenizer = AutoTokenizer.from_pretrained(
+#                 "cl-tohoku/bert-base-japanese-whole-word-masking")
+#             self.tokenizer.save_pretrained(tokenizer_dir)
+#             logger.debug("Save tokenizer to {}".format(
+#                 tokenizer_dir))
 
-        model_dir = os.path.join(
-            os.path.dirname(__file__), 'transformer_data/model')
-        if os.path.exists(model_dir):
-            logger.debug("Loading saved model from {}".format(
-                model_dir))
-            self.model = AutoModel.from_pretrained(
-                model_dir)
-        else:
-            logger.debug("Loading model from web")
-            os.makedirs(model_dir, 0o755, exist_ok=True)
-            self.model = AutoModel.from_pretrained(
-                "cl-tohoku/bert-base-japanese-whole-word-masking")
-            self.model.save_pretrained(model_dir)
-            logger.debug("Save model to {}".format(
-                model_dir))
+#         model_dir = os.path.join(
+#             os.path.dirname(__file__), 'transformer_data/model')
+#         if os.path.exists(model_dir):
+#             logger.debug("Loading saved model from {}".format(
+#                 model_dir))
+#             self.model = AutoModel.from_pretrained(
+#                 model_dir)
+#         else:
+#             logger.debug("Loading model from web")
+#             os.makedirs(model_dir, 0o755, exist_ok=True)
+#             self.model = AutoModel.from_pretrained(
+#                 "cl-tohoku/bert-base-japanese-whole-word-masking")
+#             self.model.save_pretrained(model_dir)
+#             logger.debug("Save model to {}".format(
+#                 model_dir))
 
-        self.get_vectors()
+#         self.get_vectors()
 
-    def get_vectors(self):
-        """
-        事前計算済みベクトルをメモリに展開する
-        """
-        token_embeddings = self.model.get_input_embeddings().\
-            weight.clone()
+#     def get_vectors(self):
+#         """
+#         事前計算済みベクトルをメモリに展開する
+#         """
+#         token_embeddings = self.model.get_input_embeddings().\
+#             weight.clone()
 
-        vocab = self.tokenizer.get_vocab()
-        self.vectors = {}
-        for idx in vocab.values():
-            self.vectors[idx] = token_embeddings[idx].detach().numpy().copy()
+#         vocab = self.tokenizer.get_vocab()
+#         self.vectors = {}
+#         for idx in vocab.values():
+#             self.vectors[idx] = token_embeddings[idx].detach().numpy().copy()
 
-    def item2vec(self, text: str):
-        """
-        文字列 text をトークナイザで分解し、単語ベクトルの
-        平均を計算して返す
+#     def item2vec(self, text: str):
+#         """
+#         文字列 text をトークナイザで分解し、単語ベクトルの
+#         平均を計算して返す
 
-        Parameters
-        ----------
-        text: str
-            語ベクトルを計算したい文字列
+#         Parameters
+#         ----------
+#         text: str
+#             語ベクトルを計算したい文字列
 
-        Returns
-        -------
-        np.array
-            語ベクトル
-        """
-        ids = self.tokenizer.encode(text, add_special_tokens=False)
-        embeddings = np.array([self.vectors[id] for id in ids])
-        average_embeddings = np.average(embeddings, axis=0)
-        assert average_embeddings.shape == (768,)
-        return average_embeddings
+#         Returns
+#         -------
+#         np.array
+#             語ベクトル
+#         """
+#         ids = self.tokenizer.encode(text, add_special_tokens=False)
+#         embeddings = np.array([self.vectors[id] for id in ids])
+#         average_embeddings = np.average(embeddings, axis=0)
+#         assert average_embeddings.shape == (768,)
+#         return average_embeddings
 
-    @staticmethod
-    def cos_sim(v1, v2):
-        """
-        語ベクトル間のコサイン類似度を計算する
+#     @staticmethod
+#     def cos_sim(v1, v2):
+#         """
+#         語ベクトル間のコサイン類似度を計算する
 
-        Parameters
-        ----------
-        v1, v2: np.array
-            2つの語ベクトル
+#         Parameters
+#         ----------
+#         v1, v2: np.array
+#             2つの語ベクトル
 
-        Returns
-        -------
-        float
-            コサイン類似度 (0..1, 一致する場合 1)
-        """
-        return np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
+#         Returns
+#         -------
+#         float
+#             コサイン類似度 (0..1, 一致する場合 1)
+#         """
+#         return np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
 
 
 class ItemsPair(object):
@@ -240,7 +240,7 @@ class ItemsPair(object):
         テーブル0の見出し(m)×テーブル1の見出し(n)の
         編集距離による類似度を格納する行列
     """
-    similarity = None  # Similarity()  # 時間がかかるのでオンデマンド登録
+    similarity = StringSimilarity()
 
     def __init__(self, items0: List[str], items1: List[str]):
         """
@@ -258,41 +258,26 @@ class ItemsPair(object):
 
     def get_weighted_matrix(self):
         """
-        items0 と items1 の類似度を計算し、mxsim, mxed に格納する
+        items0 と items1 の類似度を計算する
 
         Note
         ----
-        Munkres を利用するため、類似度をマイナスに反転してコストとする。
-        mxsim, mxed の要素は [-1 .. 0] の値をとる。
-        また、各行列の次元は m と n の大きい方に合わせた正方行列。
+        - Munkres を利用するため、類似度をマイナスに反転してコストとする。
+        - mxsim の要素は [-1 .. 0] の値をとる。
+        - また、行列の次元は m と n の大きい方に合わせた正方行列。
         """
         if self.mxsim is not None and self.mxed is not None:
             return self.mxsim, self.mxed
 
-        if self.__class__.similarity is None:
-            self.__class__.similarity = Similarity()
-
-        vec0 = [
-            self.__class__.similarity.item2vec(name)
-            for name in self.items0]
-        vec1 = [
-            self.__class__.similarity.item2vec(name)
-            for name in self.items1]
         dim = max(len(self.items0), len(self.items1))
         self.mxsim = np.zeros((dim, dim))
-        self.mxed = np.zeros((dim, dim))
 
-        for j in range(len(vec1)):
-            for i in range(len(vec0)):
-                ed = StringSimilarity.strsim(self.items0[i], self.items1[j])
-                sim = Similarity.cos_sim(vec0[i], vec1[j])
-                if sim < 0.0:
-                    sim = 0.0
-
+        for j in range(len(self.items1)):
+            for i in range(len(self.items0)):
+                sim = StringSimilarity.strsim(self.items0[i], self.items1[j])
                 self.mxsim[i, j] = -1.0 * sim
-                self.mxed[i, j] = -1.0 * ed
 
-        return self.mxsim, self.mxed
+        return self.mxsim
 
     def match(self):
         """

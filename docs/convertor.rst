@@ -178,15 +178,6 @@ SQL では **UPDATE** を必要とする処理に該当します。
 .. autoclass::
     tablelinker.convertors.extras.geocoder.ToPrefectureConvertor
 
-MTab アノテーション
-^^^^^^^^^^^^^^^^^^^
-
-.. autoclass::
-    tablelinker.convertors.extras.mtab.MtabColumnAnnotationConvertor
-
-.. autoclass::
-    tablelinker.convertors.extras.mtab.MtabWikilinkConvertor
-
 列の自動マッピング
 ^^^^^^^^^^^^^^^^^^
 

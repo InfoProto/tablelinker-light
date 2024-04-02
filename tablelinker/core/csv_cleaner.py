@@ -29,7 +29,7 @@ class CSVCleaner(object):
         self.text_io = None
         self.csv_reader = None
         self.delimiter = ','
-        self.encoding = "UTF-8"
+        self.encoding = None
 
         # Check if the fp is a bytes-file or a text-file.
         line = fp.readline()
@@ -40,21 +40,32 @@ class CSVCleaner(object):
                 self.encoding = "utf-8-sig"
             else:
                 # Detect encoding
-                guess = charset_normalizer.detect(line)
+                # guess = charset_normalizer.detect(line)
+                guess = charset_normalizer.from_bytes(
+                    line,
+                    cp_isolation=(
+                        'ascii', 'cp932', 'euc_jp', 'iso2022_jp',
+                        'utf_16', 'utf_32', 'utf_8')
+                ).best()
                 n = 0
-                while guess["encoding"] is None:
+                while guess.encoding is None:
                     line = fp.readline()
                     if line == "" or n > 1000:
                         logger.warning(
                             "Can't detect character encoding, give up.")
-                        guess["encoding"] = "UTF-8"
+                        self.encoding = 'utf_8'
+                        break
 
-                    guess = charset_normalizer.detect(line)
+                    guess = charset_normalizer.from_bytes(
+                        line,
+                        cp_isolation=(
+                            'ascii', 'cp932', 'euc_jp', 'iso2022_jp',
+                            'utf_16', 'utf_32', 'utf_8')
+                    ).best()
                     n += 1
 
-                self.encoding = guess["encoding"]
-                if self.encoding == "Shift_JIS":
-                    self.encoding = "cp932"
+                if self.encoding is None:
+                    self.encoding = guess.encoding
 
             self.text_io = io.TextIOWrapper(
                 buffer=fp, encoding=self.encoding, newline='')

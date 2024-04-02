@@ -10,8 +10,10 @@ import sys
 import tempfile
 from typing import List, Optional, Union
 
+from openpyxl.utils.exceptions import InvalidFileException
 import pandas as pd
 from pandas.core.frame import DataFrame
+from xlrd.biffh import XLRDError
 
 from ..convertors import basics as basic_convertors
 from .context import Context
@@ -304,10 +306,10 @@ class Table(object):
             # エクセルファイルとして読み込む
             try:
                 if self.sheet is None:
-                    df = pd.read_excel(self.file, sheet_name=0)
+                    df = pd.read_excel(self.file, sheet_name=0, engine='openpyxl')
                 else:
                     try:
-                        df = pd.read_excel(self.file, sheet_name=self.sheet)
+                        df = pd.read_excel(self.file, sheet_name=self.sheet, engine='openpyxl')
                     except ValueError:
                         if re.match(r'^\d+', self.sheet):
                             self.sheet = int(self.sheet)
@@ -332,6 +334,10 @@ class Table(object):
                         "対象にはシート '{}' は含まれていません。".format(
                             self.sheet))
                     raise ValueError("Invalid sheet name.")
+            except (InvalidFileException, XLRDError,) as e:
+                logger.debug("Read_excel raise an exception '{}'".format(e))
+                pass
+
 
         if self.filetype is None:
             # CSV 読み込み

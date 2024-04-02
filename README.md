@@ -1,6 +1,11 @@
-# tablelinker-lib
+# tablelinker-light
 
-TableLinker をコマンドライン / プログラム組み込みで利用するためのライブラリ。
+TableLinker をコマンドライン / プログラム組み込みで利用するための
+ライブラリ Tablelinker-lib の軽量版派生バージョンです。
+
+オリジナルの Tablelinker-lib は国立情報学研究所より
+https://github.com/NII-CPS-Center/tablelinker-lib
+で公開されており、 MIT ライセンスで利用可能です。
 
 ## インストール手順
 
@@ -9,16 +14,6 @@ Poetry を利用します。
 ```
 $ poetry install --with group=dev
 $ poetry shell
-```
-
-MacOS の場合、デフォルトの python バージョンが 3.11 なので
-pytorch がインストールできません。以下の手順が必要です。
-
-```
-% pyenv install 3.10
-% poetry env use 3.10
-% poetry shell
-% poetry install --with group=dev
 ```
 
 ## コマンドラインで利用する場合
