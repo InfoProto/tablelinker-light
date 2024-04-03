@@ -1,6 +1,12 @@
 # tablelinker-light
 
-![Python Versions](https://github.com/InfoProto/tablelinker-light/actions/workflows/python-package.yml/badge.svg)
+![Python 3.7](https://github.com/InfoProto/tablelinker-light/actions/workflows/python-3.7.yml/badge.svg)
+![Python 3.8](https://github.com/InfoProto/tablelinker-light/actions/workflows/python-3.8.yml/badge.svg)
+![Python 3.9](https://github.com/InfoProto/tablelinker-light/actions/workflows/python-3.9.yml/badge.svg)
+![Python 3.10](https://github.com/InfoProto/tablelinker-light/actions/workflows/python-3.10.yml/badge.svg)
+![Python 3.11](https://github.com/InfoProto/tablelinker-light/actions/workflows/python-3.11.yml/badge.svg)
+![Python 3.12](https://github.com/InfoProto/tablelinker-light/actions/workflows/python-3.12.yml/badge.svg)
+
 
 TableLinker をコマンドライン / プログラム組み込みで利用するための
 ライブラリ Tablelinker-lib の軽量版派生バージョンです。
