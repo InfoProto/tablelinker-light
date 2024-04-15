@@ -9,6 +9,7 @@ class ToSeirekiConvertor(convertors.InputOutputConvertor):
     r"""
     概要
         和暦から西暦を計算します。
+        ただし旧暦と新暦の変換は行いません。
 
     コンバータ名
         "to_seireki"
@@ -134,6 +135,7 @@ class ToWarekiConvertor(convertors.InputOutputConvertor):
     r"""
     概要
         西暦から和暦を計算します。
+        ただし旧暦と新暦の変換は行いません。
 
     コンバータ名
         "to_wareki"
